@@ -37,9 +37,22 @@ class GroupEstimate:
     def predict(self, X):
         ''' Predict using the group-level estimates.'''
 
-        # Create a copy of X to avoid modifying the original data
-        df = X.copy()
+
+        # check if dataframe
+        if isinstance(X, pd.DataFrame):
+            # Create a copy of X to avoid modifying the original data
+            df = X.copy()
         
+        
+        elif isinstance(X, (list, np.ndarray)):
+            # Convert to DataFrame
+            df = pd.DataFrame(X, columns=self.columns_)
+        else:
+            raise ValueError("Input must be a pandas DataFrame, list, or numpy array")
+
+
+
+
         # Merge with lookup table to get predictions
         lok = self.lookup_.reset_index().rename(columns={"_y": "y_pred"})
     
