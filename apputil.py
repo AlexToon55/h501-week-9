@@ -7,6 +7,7 @@ import numpy as np
 # Dummy class for group-level estimation
 class GroupEstimate:
     def __init__(self, estimate="mean"):
+        ''' Initialize the GroupEstimate model.'''
         if not estimate in ["mean", "median"]:
             raise ValueError("Estimate must be 'mean' or 'median'")
         
@@ -16,6 +17,7 @@ class GroupEstimate:
         self.columns_ = None
     
     def fit(self, X, y):
+        ''' Fit the GroupEstimate model.'''
 
         # Store column names
         self.columns_ = list(X.columns)
@@ -33,4 +35,19 @@ class GroupEstimate:
         return self
 
     def predict(self, X):
-        raise NotImplementedError("Not Implemented")
+        ''' Predict using the group-level estimates.'''
+
+        # Create a copy of X to avoid modifying the original data
+        df = X.copy()
+        
+        # Merge with lookup table to get predictions
+        lok = self.lookup_.reset_index().rename(columns={"_y": "y_pred"})
+    
+        # Perform left join to get predictions
+        df = df.merge(lok, on=self.columns_, how="left")
+
+        # Extract predictions
+        y_pred = df["y_pred"].values
+
+
+        return y_pred
